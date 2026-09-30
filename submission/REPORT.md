@@ -1,4 +1,4 @@
-# Báo cáo cá nhân — K4-L3B Day 13 Monitoring & LLMOps
+﻿# Báo cáo cá nhân — K4-L3B Day 13 Monitoring & LLMOps
 
 > Mỗi học viên hoàn thiện một file duy nhất này. Evidence được dẫn bằng link tương đối để mở trực tiếp trên GitHub.
 
@@ -14,27 +14,18 @@
 
 ## 2. Evidence index
 
-Điền đúng đường dẫn tới evidence thực tế. Có thể đổi tên hoặc dùng nhiều ảnh nếu cần.
+Theo [hướng dẫn nộp](../docs/SUBMISSION.md), bộ chính thức gồm ba output text và năm ảnh runtime. Các ảnh mang tên theo `SCREENSHOT_GUIDE.md` cũng được giữ trong `submission/evidence/`; bảng dưới dẫn đến bộ năm ảnh chính thức.
 
 | Evidence | Đường dẫn | Trạng thái |
 |---|---|---|
-| Pytest cuối | [01-pytest.txt](evidence/01-pytest.txt) | Chạy sau các thay đổi cuối: 28 passed, 2.92 s. |
-| Log validator CP1 | [02-log-validator.png](evidence/02-log-validator.png) | 100/100, 65 records, 24 correlation ID, 0 PII leak; phía trên còn lệnh thử cũ. |
-| Dashboard validator CP2 | [03-dashboard-validator.png](evidence/03-dashboard-validator.png) | HỢP LỆ 6/6. |
-| Structured log | [04-structured-log.png](evidence/04-structured-log.png) | Có response_sent, correlation ID và metadata. |
-| PII redaction | [05-pii-redaction.png](evidence/05-pii-redaction.png) | Output `scrub_text` che email, điện thoại, CCCD và thẻ giả; phía trên còn lệnh thử lỗi. Validator và structured log là bằng chứng bổ sung cho log thực tế. |
-| Trace list | [06-trace-list.png](evidence/06-trace-list.png) | Danh sách trace trong project Langfuse cá nhân. |
-| Trace waterfall | [07-trace-waterfall.png](evidence/07-trace-waterfall.png) | Root, retrieval và generation. |
-| Trace metadata | [08-trace-metadata.png](evidence/08-trace-metadata.png) | Có correlation ID, prompt v2, model, token và cost; label `production` xem ở [ảnh promote](evidence/10a-prompt-promoted.png). |
-| Prompt versions | [09-prompt-versions.png](evidence/09-prompt-versions.png) | Có v1/v2 cùng labels. |
-| Prompt promote | [10a-prompt-promoted.png](evidence/10a-prompt-promoted.png) | v2 có label `production`. |
-| Prompt rollback | [10b-prompt-after-rollback.png](evidence/10b-prompt-after-rollback.png) | `production` trở về v1. |
-| Request sau rollback | [10c-after-rollback-request.png](evidence/10c-after-rollback-request.png) | Output request kiểm chứng. |
-| Dashboard runtime | [11-dashboard-overview.png](evidence/11-dashboard-overview.png) | Sáu panel runtime. |
-| CP3 baseline metric | [12a-cp3-baseline.png](evidence/12a-cp3-baseline.png) | Trước incident: 10 request, error 0%, retrieval 100%. |
-| Incident metric | [12-incident-metric.png](evidence/12-incident-metric.png) | Sau challenge: 15 request tổng, error 0%, retrieval 100%, P95 2,654.6 ms. |
-| Incident log | [13-incident-log.png](evidence/13-incident-log.png) | Năm request challenge, correlation ID, latency và retrieval thành công. |
-| Incident trace | [14-incident-trace.png](evidence/14-incident-trace.png) | Trace khớp `req-062aca18`; span retrieval 2.50 s. |
+| Pytest cuối | [pytest.txt](evidence/pytest.txt) | 28 passed; chạy với `--basetemp` trong workspace để tránh lỗi quyền dọn temp của Windows. |
+| Log validator | [log-validator.txt](evidence/log-validator.txt) | 100/100; 33 records, 17 correlation ID, 0 PII leak. |
+| Dashboard validator | [dashboard-validator.txt](evidence/dashboard-validator.txt) | HỢP LỆ: 6/6 panel. |
+| 01 — Incident log | [01-incident-log.png](evidence/01-incident-log.png) | Dòng JSON `response_sent` cho `req-062aca18`; có event, correlation ID, model/env/feature và latency 2,653 ms. |
+| 02 — Trace list | [02-trace-list.png](evidence/02-trace-list.png) | Bản sao nguyên gốc từ ảnh trace list; project cá nhân và số lượng trace nhìn thấy. |
+| 03 — Incident trace | [03-incident-trace.png](evidence/03-incident-trace.png) | Trace cùng `req-062aca18` với ảnh 01; thấy trace ID, retrieval 2.50 s, generation, prompt `day13-chat` v1, model, token và cost. |
+| 04 — Prompt versioning | [04-prompt-versioning.png](evidence/04-prompt-versioning.png) | Ảnh desktop hiển thị trace generation dùng `day13-chat` v2 cạnh trang Versions sau rollback: v1 `production`/`baseline`, v2 `candidate`/`latest`. |
+| 05 — Dashboard incident | [05-dashboard-incident.png](evidence/05-dashboard-incident.png) | Bản sao nguyên gốc dashboard 6 panel sau challenge; P95 2,654.6 ms. |
 
 ## 3. Kết quả kỹ thuật
 
@@ -42,7 +33,7 @@
 |---|---|---|---|
 | `validate_logs.py` | 30/100 | 100/100 | CP1: 65 records, 24 correlation ID; lần chạy cuối: 33 records, 17 correlation ID; cả hai lần đều 0 thiếu field/context và 0 PII leak. |
 | `validate_dashboard.py` | — | 6/6 | Kết quả lần chạy cuối; dashboard contract hợp lệ. |
-| `pytest` | — | 28 passed | Lần chạy cuối: 28 passed trong 2.92 s. |
+| `pytest` | — | 28 passed | Lần chạy cuối: 28 passed trong 3.24 s. |
 | Root traces hiển thị trong project | — | 34 | Langfuse hiển thị 34 `lab-agent-run`; workload riêng có ít nhất 10 traces. |
 | PII leak trong log | — | 0 | Theo kết quả `validate_logs.py`. |
 | Latency P95 / TTFT P95 | — | 661.2 ms / 50.55 ms | Đọc từ dashboard local, cửa sổ 60 phút. |
@@ -79,9 +70,9 @@
 
 - **Challenge ID:** `day13-k4-l3b-monitoring-llmops-v1` (cohort K4, incident `rag_slow`, affected feature `monitoring`). Challenge config được Lab Coach cấp và giữ ngoài Git theo `.gitignore`.
 - **Khoảng thời gian điều tra:** 2026-09-30 khoảng 12:44:32–12:44:46 giờ Việt Nam (05:44:32–05:44:46 UTC), sau khi bật incident.
-- **Triệu chứng từ metrics:** Baseline trước incident: 10 request, error 0%, retrieval 100%; dashboard P95 1,211 ms. Sau 5 request challenge: 15 request tổng, error 0%, retrieval 100%, P95 2,654.6 ms (tăng khoảng 1,444 ms so với dashboard baseline). Log baseline có cold-start đầu tiên 2,075 ms; 9 request warm là 152–155 ms. Challenge lên 2,653–2,656 ms, tăng khoảng 2.5 giây so với warm baseline. Ảnh: [baseline](evidence/12a-cp3-baseline.png), [metrics](evidence/12-incident-metric.png).
-- **Log line và correlation ID liên quan:** `response_sent` ghi latency 2,653–2,656 ms cho 5 request challenge. Ví dụ `req-062aca18`: 2,653 ms lúc `2026-09-30T05:44:35.434215Z`; các ID còn lại: `req-66b1086a` (2,654 ms), `req-ddffc015` (2,653 ms), `req-b651d8ba` (2,653 ms), `req-77734de7` (2,656 ms). Tất cả là feature `monitoring`, `tool_name=retrieval`, `tool_success=true`. Ảnh: [incident log](evidence/13-incident-log.png).
-- **Trace ID và span gây ảnh hưởng:** Trace ID `9f7e576249ea1051e052750bede8a8d1`, correlation ID `req-062aca18`. Span `retrieval` mất 2.50 s; span `generation` mất 0.15 s. Tổng trace khoảng 2.66 s; generation có 186 tokens và cost `$0.002358`. Ảnh: [incident trace](evidence/14-incident-trace.png).
+- **Triệu chứng từ metrics:** Baseline trước incident: 10 request, error 0%, retrieval 100%; dashboard P95 1,211 ms. Sau 5 request challenge: 15 request tổng, error 0%, retrieval 100%, P95 2,654.6 ms (tăng khoảng 1,444 ms so với dashboard baseline). Log baseline có cold-start đầu tiên 2,075 ms; 9 request warm là 152–155 ms. Challenge lên 2,653–2,656 ms, tăng khoảng 2.5 giây so với warm baseline. Ảnh: baseline CP3 P95 1,211 ms; [dashboard sau incident](evidence/05-dashboard-incident.png).
+- **Log line và correlation ID liên quan:** `response_sent` ghi latency 2,653–2,656 ms cho 5 request challenge. Ví dụ `req-062aca18`: 2,653 ms lúc `2026-09-30T05:44:35.434215Z`; các ID còn lại: `req-66b1086a` (2,654 ms), `req-ddffc015` (2,653 ms), `req-b651d8ba` (2,653 ms), `req-77734de7` (2,656 ms). Tất cả là feature `monitoring`, `tool_name=retrieval`, `tool_success=true`. Ảnh: incident log `req-062aca18` (ảnh chuẩn sẽ nằm tại `evidence/01-incident-log.png`).
+- **Trace ID và span gây ảnh hưởng:** Trace ID `9f7e576249ea1051e052750bede8a8d1`, correlation ID `req-062aca18`. Span `retrieval` mất 2.50 s; span `generation` mất 0.15 s. Tổng trace khoảng 2.66 s; generation có 186 tokens và cost `$0.002358`. Ảnh: [incident trace](evidence/03-incident-trace.png).
 - **Root cause:** Challenge bật incident `rag_slow`; mã retrieval chủ động chờ 2.5 giây. Trace xác nhận span `retrieval` mất đúng 2.50 s, còn `generation` chỉ 0.15 s; điều này khớp với log 2,653 ms và metrics P95 2,654.6 ms.
 - **Fix action:** Tắt incident `rag_slow`; API trả HTTP 200 và `/health` xác nhận cả `rag_slow`, `tool_fail`, `cost_spike` đều `false`. Chưa có request sau khi tắt để đo xác nhận latency phục hồi.
 - **Preventive measure:** Alert SLO hiện tại báo khi P95 vượt 3,000 ms, nhưng ngưỡng này cao hơn P95 của challenge (2,654.6 ms) nên sẽ không báo cho sự cố này. Giữ alert SLO cho vi phạm nghiêm trọng và đề xuất thêm cảnh báo thời lượng span retrieval trên 2,000 ms cùng runbook tra correlation ID; đây là đề xuất, chưa cấu hình trong `config/alert_rules.yaml`.
@@ -96,7 +87,7 @@
 - **Cách hiểu luồng Metrics → Logs → Traces:** Dashboard chỉ ra bất thường và khoảng thời gian; `correlation_id` tìm đúng structured log; cùng ID lọc trace để xem retrieval/generation.
 - **Vai trò của prompt version, token/cost, SLO hoặc rollback trong vận hành LLM:** Version/label xác định prompt đã phục vụ request; token/cost và SLO giúp nhận ra thay đổi ảnh hưởng vận hành; rollback đưa `production` về v1 đã biết.
 - **Điều quan trọng nhất đã học:** `correlation_id` nối log với trace, còn trace ID định danh trace; chúng phục vụ hai mục đích khác nhau.
-- **Hạn chế hoặc phần chưa hoàn thành, nếu có:** Ảnh `02` và `05` có lệnh thử lỗi phía trên; ảnh `05` là output scrubber chứ không phải log ứng dụng. CP3 hoàn tất; incident đã tắt và health xác nhận mọi incident `false`. Test và validators đã chạy lại đạt yêu cầu; còn tạo commit cuối, ghi SHA theo quy trình nộp và nộp URL/SHA trên LMS.
+- **Hạn chế hoặc phần chưa hoàn thành, nếu có:** Alert P95 3000 ms không phát hiện challenge có P95 2654.6 ms; report đề xuất thêm alert retrieval trên 2000 ms. CP3 hoàn tất; incident đã tắt và health xác nhận mọi incident `false`.
 
 ## 9. Checklist trước khi nộp
 
